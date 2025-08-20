@@ -1,4 +1,4 @@
-﻿using AutoClicker;
+﻿using ZoomMod;
 
 public class KeyEvent
 {

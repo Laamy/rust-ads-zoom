@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D71CD205-A88C-44F3-8C97-C420CA2CF48A}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>fghfghj</RootNamespace>
-    <AssemblyName>fghfghj</AssemblyName>
+    <RootNamespace>ZoomMod</RootNamespace>
+    <AssemblyName>ZoomMod</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -35,10 +35,10 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RawInput.Sharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RawInput.Sharp.0.1.3\lib\net48\RawInput.Sharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -52,12 +52,14 @@
   <ItemGroup>
     <Compile Include="Keymap\KeyEvent.cs" />
     <Compile Include="Keymap\Keymap.cs" />
+    <Compile Include="System32\Magnification.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System32\User32.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="app.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

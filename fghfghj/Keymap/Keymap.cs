@@ -1,4 +1,4 @@
-﻿using AutoClicker;
+﻿using ZoomMod;
 
 using System;
 using System.Collections.Concurrent;
@@ -56,7 +56,7 @@ class Keymap
     }
 }
 
-namespace AutoClicker
+namespace ZoomMod
 {
     public enum VKeyCodes
     {
