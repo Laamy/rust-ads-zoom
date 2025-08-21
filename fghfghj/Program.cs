@@ -35,23 +35,15 @@ class Program
 
     private static void OnKeyPress(KeyEvent evnt)
     {
-        IntPtr foregroundWindow = GetForegroundWindow();
-
-        if (foregroundWindow == IntPtr.Zero)
+        RECT winRect = default;
+        if (!GetFocusRect(ref winRect))
         {
             Thread.Sleep(1000);
             return;
         }
 
-        RECT rustRect;
-        if (!GetWindowRect(foregroundWindow, out rustRect))
-        {
-            Thread.Sleep(1000);
-            return;
-        }
-
-        var centerX = rustRect.Left + rustRect.Width / 2.0f;
-        var centerY = rustRect.Top + rustRect.Height / 2.0f;
+        var centerX = winRect.Left + winRect.Width / 2.0f;
+        var centerY = winRect.Top + winRect.Height / 2.0f;
 
         if (evnt.Key == 0x02)
         {
@@ -74,6 +66,19 @@ class Program
                 SetZoomFactor(1.0f, [0, 0]);
             }
         }
+    }
+
+    private static bool GetFocusRect(ref RECT winRect)
+    {
+        IntPtr foregroundWindow = GetForegroundWindow();
+
+        if (foregroundWindow == IntPtr.Zero)
+            return false;
+
+        if (!GetWindowRect(foregroundWindow, out winRect))
+            return false;
+
+        return true;
     }
 
     const int CURSOR_SHOWING = 0x00000001;
