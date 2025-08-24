@@ -53,6 +53,9 @@ class Keymap
 
             prevBuff[i] = asyncKeyState;
         }
+
+        // im lazy so tick regardless
+        this.OnKeyPress(new KeyEvent(0, VKeyCodes.KeyHeld));
     }
 }
 

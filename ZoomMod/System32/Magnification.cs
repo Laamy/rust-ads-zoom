@@ -1,6 +1,7 @@
 ﻿namespace ZoomMod.System32;
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 internal class Magnification
@@ -17,7 +18,8 @@ internal class Magnification
     private static float curMag = 1.0f;
     private static bool hasInit = false;
 
-    public static void SetZoomFactor(float zoomFactor, int[] offsets)
+    static Stopwatch smoothStart;
+    public static void SetZoomFactor(float zoomFactor, int[] offsets, bool smooth)
     {
         if (zoomFactor < 1.0f || zoomFactor > 10.0f)
             throw new ArgumentOutOfRangeException(nameof(zoomFactor), "Zoom factor must be between 1.0 and 10.0.");
@@ -32,14 +34,46 @@ internal class Magnification
             }
         }
 
-        if (curMag == zoomFactor)
-            return;
+        if (smooth)
+        {
+            if (curMag != zoomFactor && smoothStart == null)
+                smoothStart = Stopwatch.StartNew();
 
-        if (MagSetFullscreenTransform(zoomFactor, offsets[0], offsets[1]))
-            curMag = zoomFactor;
+            if (curMag == zoomFactor)
+            {
+                smoothStart = null;
+                return;
+            }
+
+            var tickFactor = smoothStart?.ElapsedMilliseconds / 1000.0f ?? 0.0f;
+            var smoothFactor = Math.Clamp(tickFactor / 2, 0.0f, 1.0f);
+
+            var finalFactor = curMag + (zoomFactor - curMag) * smoothFactor;
+
+            if (Math.Abs(finalFactor - zoomFactor) < 0.02f)
+            {
+                finalFactor = zoomFactor;
+                smoothStart = null;
+            }
+
+            if (MagSetFullscreenTransform(finalFactor, offsets[0], offsets[1]))
+                curMag = finalFactor;
+            else
+            {
+                throw new InvalidOperationException("Failed to set fullscreen transform.");
+            }
+        }
         else
         {
-            throw new InvalidOperationException("Failed to set fullscreen transform.");
+            if (MagSetFullscreenTransform(zoomFactor, offsets[0], offsets[1]))
+            {
+                curMag = zoomFactor;
+                smoothStart = null;
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to set fullscreen transform.");
+            }
         }
     }
 }

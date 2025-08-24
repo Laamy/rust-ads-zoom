@@ -1,95 +1,118 @@
 ﻿namespace ZoomMod;
 
 using System;
-using System.Runtime.InteropServices;
-using System.Threading;
-
-using static ZoomMod.System32.User32;
-using static ZoomMod.System32.Magnification;
+using System.Reflection;
 
 class Program
 {
-    const float zoomFactor = 1.5f;
-
     [STAThread]
     static void Main(string[] args)
     {
-        Keymap keymap = new Keymap();
-
-        keymap.OnKeyPress += OnKeyPress;
-
         LogNote("Zoom client activated");
+        Console.WriteLine("Type 'help' to list commands");
+
+        AppEngine.Run();
 
         while (true)
         {
-            Thread.Sleep(1);//64hz
+            Console.Write("> ");
+            var input = Console.ReadLine()?.Trim();
 
-            keymap.Tick();
+            if (string.IsNullOrWhiteSpace(input))
+                continue;
+
+            var parts = input.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+            var command = parts[0].ToLower();
+            var value = parts.Length > 1 ? parts[1] : null;
+
+            if (command == "exit") break;
+
+            switch (command)
+            {
+                case "help":
+                    ShowHelp();
+                    break;
+
+                default:
+                    if (!TryUpdateConfig(command, value))
+                        Console.WriteLine($"Unknown command: {command}");
+                    break;
+            }
         }
+    }
+
+    static void ShowHelp()
+    {
+        Console.WriteLine("Available commands:");
+
+        var configFields = typeof(Config)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(f => f.IsDefined(typeof(AliasAttribute), false));    
+
+        foreach (var field in configFields)
+        {
+            var aliases = field.GetCustomAttribute<AliasAttribute>().Aliases;
+            Console.Write($"  {field.Name.ToLower()} <value, {field.FieldType.Name}>: ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write($"{field.GetValue(null)}");
+            Console.ResetColor();
+            Console.WriteLine($" (aliases: {string.Join(", ", aliases)})");
+        }
+
+        Console.WriteLine("  help - Show this help text");
+        Console.WriteLine("  exit - Exit the program");
+    }
+
+    static bool TryUpdateConfig(string fieldName, string valueStr)
+    {
+        var configFields = typeof(Config)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(f => f.IsDefined(typeof(AliasAttribute), false));
+
+        foreach (var field in configFields)
+        {
+            var aliases = field.GetCustomAttribute<AliasAttribute>().Aliases;
+            if (aliases.Contains(fieldName))
+            {
+                try
+                {
+                    var fieldType = field.FieldType;
+                    object newValue;
+                    if (fieldType == typeof(float))
+                    {
+                        newValue = float.Parse(valueStr);
+                    }
+                    else if (fieldType == typeof(int))
+                    {
+                        newValue = int.Parse(valueStr);
+                    }
+                    else if (fieldType == typeof(bool))
+                    {
+                        newValue = bool.Parse(valueStr);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Unsupported type: {fieldType.Name}");
+                        return false;
+                    }
+                    field.SetValue(null, newValue);
+                    LogNote($"Updated {field.Name} to {newValue}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error updating {field.Name}: {ex.Message}");
+                }
+                return true;
+            }
+        }
+
+        Console.WriteLine($"Unknown field: {fieldName}");
+
+        return true;
     }
 
     private static void LogNote(string note)
     {
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {note}");
-    }
-
-    private static void OnKeyPress(KeyEvent evnt)
-    {
-        RECT winRect = default;
-        if (!GetFocusRect(ref winRect))
-        {
-            Thread.Sleep(1000);
-            return;
-        }
-
-        var centerX = winRect.Left + winRect.Width / 2.0f;
-        var centerY = winRect.Top + winRect.Height / 2.0f;
-
-        if (evnt.Key == 0x02)
-        {
-            if (!CanUseMoveKeys())
-            {
-                SetZoomFactor(1.0f, [0, 0]);
-                return;
-            }
-
-            if (evnt.VKey == VKeyCodes.KeyDown)
-            {
-                var offsetX = centerX - (centerX / zoomFactor);
-                var offsetY = centerY - (centerY / zoomFactor);
-
-                SetZoomFactor(zoomFactor, [(int)offsetX, (int)offsetY]);
-            }
-
-            if (evnt.VKey == VKeyCodes.KeyUp)
-            {
-                SetZoomFactor(1.0f, [0, 0]);
-            }
-        }
-    }
-
-    private static bool GetFocusRect(ref RECT winRect)
-    {
-        var foregroundWindow = GetForegroundWindow();
-
-        if (foregroundWindow == IntPtr.Zero)
-            return false;
-
-        if (!GetWindowRect(foregroundWindow, out winRect))
-            return false;
-
-        return true;
-    }
-
-    const int CURSOR_SHOWING = 0x00000001;
-    private static bool CanUseMoveKeys()
-    {
-        CURSORINFO cursorInfo = new();
-        cursorInfo.cbSize = Marshal.SizeOf(cursorInfo);
-        if (!GetCursorInfo(ref cursorInfo))
-        {
-            return false;
-        }
-        return (cursorInfo.flags & CURSOR_SHOWING) == 0;
     }
 }
