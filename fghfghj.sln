@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.36105.23 d17.13
+VisualStudioVersion = 17.13.36105.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fghfghj", "fghfghj\fghfghj.csproj", "{D71CD205-A88C-44F3-8C97-C420CA2CF48A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZoomMod", "ZoomMod\ZoomMod.csproj", "{E79153A0-69AF-4D65-A662-4D62B921B13B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D71CD205-A88C-44F3-8C97-C420CA2CF48A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D71CD205-A88C-44F3-8C97-C420CA2CF48A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D71CD205-A88C-44F3-8C97-C420CA2CF48A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D71CD205-A88C-44F3-8C97-C420CA2CF48A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E79153A0-69AF-4D65-A662-4D62B921B13B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E79153A0-69AF-4D65-A662-4D62B921B13B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E79153A0-69AF-4D65-A662-4D62B921B13B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E79153A0-69AF-4D65-A662-4D62B921B13B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
