@@ -36,17 +36,17 @@ internal class Magnification
 
         if (smooth)
         {
-            if (curMag != zoomFactor && smoothStart == null)
-                smoothStart = Stopwatch.StartNew();
-
             if (curMag == zoomFactor)
             {
                 smoothStart = null;
                 return;
             }
 
+            if (curMag != zoomFactor && smoothStart == null)
+                smoothStart = Stopwatch.StartNew();
+
             var tickFactor = smoothStart?.ElapsedMilliseconds / 1000.0f ?? 0.0f;
-            var smoothFactor = Math.Clamp(tickFactor / 2, 0.0f, 1.0f);
+            var smoothFactor = Math.Clamp(tickFactor / Config.ZoomSpeed, 0.0f, 1.0f);
 
             var finalFactor = curMag + (zoomFactor - curMag) * smoothFactor;
 

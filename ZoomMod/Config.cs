@@ -7,6 +7,9 @@ public class Config
     [Alias(["zoom"])]
     public static float ZoomFactor = 1.5f;
 
+    [Alias(["speed"])]
+    public static float ZoomSpeed = 0.2f;
+
     //[Alias(["minzoom"])]
     //public static int MaxZoomLevel = 5;
 
